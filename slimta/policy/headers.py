@@ -156,7 +156,7 @@ class AddDKIMHeader(QueuePolicy):
        https://gathman.org/pydkim/
        https://launchpad.net/dkimpy
     """
-    def __init__(self, dkim):
+    def __init__(self, dkim: dict):
         if not dkim_sign:
             raise ImportError('dkimpy is not installed')
         self.dkim = dkim
@@ -168,7 +168,7 @@ class AddDKIMHeader(QueuePolicy):
             return  # no warn if sending deliv. fail notif.
 
         if '@' not in dom:
-            slimta.logging.logline(
+            slimta.logging.log.logline(
                 self.logger.error, __name__, id(self),
                 'DKIM: invalid sender', **dict(sender=dom)
             )
@@ -176,7 +176,7 @@ class AddDKIMHeader(QueuePolicy):
 
         dom = dom.split('@')[1]
         if dom not in self.dkim:
-            slimta.logging.logline(
+            slimta.logging.log.logline(
                 self.logger.debug, __name__, id(self),
                 "DKIM: domain :'" + dom + "' is not setup, ignore",
             )
@@ -204,7 +204,7 @@ class AddDKIMHeader(QueuePolicy):
                 include_headers=flds,
             )
         except DKIMException as e:
-            slimta.logging.logline(
+            slimta.logging.log.logline(
                 self.logger.error, __name__, id(self),
                 'DKIM: exception:' + str(e),
                 **dict(sender=envelope.sender, domain=dom),
