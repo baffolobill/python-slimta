@@ -112,6 +112,7 @@ def log_exception(name, **kwargs):
     if not value or not type:
         return
     tb_repr = reprlib.Repr()
+    tb_repr.maxother = 10000
     tb_repr.maxstring = 10000
     logger = logging.getLogger(name)
     data = kwargs.copy()

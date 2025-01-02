@@ -67,6 +67,9 @@ class IO(object):
     def encrypted(self):
         return isinstance(self.socket, SSLSocket)
 
+    def _sni_callback(self, socket, server_name, context):
+        context.server_hostname = server_name
+
     def close(self):
         log.close(self.socket)
         if self.encrypted:
@@ -75,6 +78,8 @@ class IO(object):
             except ValueError:
                 pass
             except SSLWantReadError:
+                pass
+            except SSLError:
                 pass
             except socket_error as e:
                 if e.errno not in (0, EPIPE, ECONNRESET):
@@ -117,6 +122,7 @@ class IO(object):
     def encrypt_socket_server(self, context):
         log.encrypt(self.socket, context)
         try:
+            context.sni_callback = self._sni_callback
             self.socket = context.wrap_socket(self.socket, server_side=True)
             return True
         except SSLError as exc:
