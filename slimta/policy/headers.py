@@ -139,22 +139,28 @@ class AddReceivedHeader(QueuePolicy):
 
 
 class AddDKIMHeader(QueuePolicy):
-    """Adds a Domain Key Identified Mail header
-       will by default sign all the headers (except the ones marked
-       as SHOULD NOT SIGN as stated in dkimpy doc)
-       if this is not the last header added, the following ones
-       will not be signed.
-       :param dkim: Dict of dicts indexed by domain (example.com)
-                    - privkey: private key: PEM file loaded in a string
-                    - selector: selector setup in DNS for the domain
-                    - signature_algorithm: (default rsa-sha256)
-                    - include-headers: headers to sign (by default, all
-                    except the ones marked as SHOULD NOT SIGN see
-                    dkimpy doc)
-       Refs:
-       https://www.dkim.org
-       https://gathman.org/pydkim/
-       https://launchpad.net/dkimpy
+    """
+    Adds a DKIM (Domain Key Identified Mail) header
+    will by default sign all the headers (except the ones marked
+    as SHOULD NOT SIGN as stated in dkimpy doc)
+    if this is not the last header added, the following ones
+    will not be signed.
+    :param dkim: Dict of dicts indexed by domain (example.com)
+                - privkey: private key: PEM file loaded in a string
+                - selector: selector setup in DNS for the domain
+                - signature_algorithm: (default rsa-sha256)
+                - include-headers: headers to sign (by default, all
+                except the ones marked as SHOULD NOT SIGN see
+                dkimpy doc)
+    Refs:
+    https://www.dkim.org
+    https://gathman.org/pydkim/
+    https://launchpad.net/dkimpy
+
+    Important! Must be last, after all modifications of headers and message. 
+    Otherwise, signature will be invalid and email will not be delivered.
+    You can test validity of signature by sending email on address, generated here: 
+    https://wander.science/projects/email/dkimtest/
     """
     def __init__(self, dkim: dict):
         if not dkim_sign:
